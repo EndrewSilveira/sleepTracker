@@ -43,6 +43,7 @@ android {
     // Enables data binding.
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 
     compileOptions {

@@ -36,9 +36,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SleepTrackerFragment : Fragment() {
 
-
-    private val viewModel: SleepTrackerViewModel by viewModels()
     private lateinit var binding: FragmentSleepTrackerBinding
+    private val viewModel: SleepTrackerViewModel by viewModels()
+    private val adapter: SleepTrackerAdapter by lazy { SleepTrackerAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +55,18 @@ class SleepTrackerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.rvSleepNights.adapter = adapter
+
+        initObservers()
+    }
+
+    private fun initObservers() {
+        viewModel.nights.observe(viewLifecycleOwner) { nights ->
+            nights?.let {
+                adapter.submitList(nights)
+            }
+        }
+
         viewModel.navigateToSleepQuality.observe(viewLifecycleOwner) { night ->
             night?.let {
                 this.findNavController().navigate(
@@ -65,7 +77,8 @@ class SleepTrackerFragment : Fragment() {
             }
         }
         viewModel.cleared.observe(viewLifecycleOwner) {
-            Snackbar.make(binding.root, getString(R.string.cleared_message), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, getString(R.string.cleared_message), Snackbar.LENGTH_SHORT)
+                .show()
         }
     }
 }
